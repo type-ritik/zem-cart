@@ -8,8 +8,8 @@ const cookieParser = require("cookie-parser");
 
 const { client } = require("./database/connect");
 
-const sellerAuthRoutes = require("./routers/SellerAuthRoutes")
-const userAuthRoutes = require("./routers/UserAuthRoutes")
+const sellerAuthRoutes = require("./routers/SellerAuthRoutes");
+const userAuthRoutes = require("./routers/UserAuthRoutes");
 
 async function startServer() {
   const app = express();

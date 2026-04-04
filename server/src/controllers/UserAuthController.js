@@ -1,4 +1,5 @@
 const validator = require("../configs/validator");
+const { createUser } = require("../services/UserServices");
 
 const registerUser = async (req, res) => {
   try {
@@ -17,11 +18,19 @@ const registerUser = async (req, res) => {
       return res.status(400).json({ error: "Password must be strong" });
     }
 
+    const payload = await createUser(name, email, password);
 
+    if (!payload) {
+      return res.status(500).json({ error: "Failed to register user" });
+    }
 
-    res.status(201).json({ message: "User registered successfully" });
+    res.status(201).json({
+      payload,
+      statusCode: 201,
+      message: "User registered successfully",
+    });
   } catch (error) {
-    res.status(500).json({ error: "Failed to register user" });
+    res.status(500).json({ error: error.message });
   }
 };
 const loginUser = async (req, res) => {
@@ -29,7 +38,7 @@ const loginUser = async (req, res) => {
     // Register a new seller
     res.status(201).json({ message: "User login successfully" });
   } catch (error) {
-    res.status(500).json({ error: "Failed to login user" });
+    res.status(500).json({ error: error.message });
   }
 };
 const getUserProfile = async (req, res) => {
@@ -37,9 +46,9 @@ const getUserProfile = async (req, res) => {
     // Register a new seller
     res.status(201).json({ message: "User profile retrieved successfully" });
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: "Failed to retrive profile retrieved successfully" });
+    res.status(500).json({
+      error: error.message,
+    });
   }
 };
 

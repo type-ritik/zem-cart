@@ -6,10 +6,10 @@ const {
   loginUser,
   getUserProfile,
 } = require("../controllers/UserAuthController.js");
-const { authenticateSeller } = require("../middlewares/authMiddleware.js");
+const { authenticate } = require("../middlewares/authMiddleware.js");
 
 route.post("/register", registerUser);
 route.post("/login", loginUser);
-route.get("/profile", authenticateSeller, getUserProfile);
+route.get("/profile", authenticate, getUserProfile);
 
 module.exports = route;
