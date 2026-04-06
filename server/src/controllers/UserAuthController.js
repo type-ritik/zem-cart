@@ -1,5 +1,5 @@
 const validator = require("../configs/validator");
-const { createUser } = require("../services/UserServices");
+const { createUser, logUser } = require("../services/UserServices");
 
 const registerUser = async (req, res) => {
   try {
@@ -35,8 +35,33 @@ const registerUser = async (req, res) => {
 };
 const loginUser = async (req, res) => {
   try {
-    // Register a new seller
-    res.status(201).json({ message: "User login successfully" });
+    const { email, password } = req.body;
+
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({
+        error: "Invalid email format",
+      });
+    }
+
+    if (!validator.isStrongPassword(password)) {
+      return res.status(400).json({
+        error: "Password must be strong",
+      });
+    }
+
+    const payload = await logUser(email, password);
+
+    if (!payload) {
+      return res.status(500).json({
+        error: "Failed to login user",
+      });
+    }
+
+    res.status(200).json({
+      payload,
+      statuscode: 200,
+      message: "User login successfully",
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

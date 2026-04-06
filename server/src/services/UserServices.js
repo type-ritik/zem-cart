@@ -1,5 +1,5 @@
 const { generateToken } = require("../configs/jwtConfig");
-const { hashPassword } = require("../configs/passwordEncoder");
+const { hashPassword, comparePassword } = require("../configs/passwordEncoder");
 const {
   findUserByEmail,
   registerUserRecord,
@@ -46,4 +46,44 @@ const createUser = async (name, email, password) => {
   }
 };
 
-module.exports = { createUser };
+const logUser = async (email, password) => {
+  try {
+    const isRegisteredEmail = await findUserByEmail(email);
+
+    if (!isRegisteredEmail) {
+      throw new Error("Email is not registered");
+    }
+
+    const isValidPassword = await comparePassword(password, isRegisteredEmail.password_hash);
+
+    if (!isValidPassword) {
+      throw new Error("Incorrect password");
+    }
+
+    console.log(isRegisteredEmail);
+
+    const token = generateToken(
+      isRegisteredEmail.user_id,
+      isRegisteredEmail.is_admin,
+    );
+
+    if (!token) {
+      throw new Error("Failed to generate token");
+    }
+
+    return {
+      user: {
+        id: isRegisteredEmail.user_id,
+        name: isRegisteredEmail.name,
+        email: isRegisteredEmail.email,
+        isAdmin: isRegisteredEmail.is_admin,
+        createdAt: isRegisteredEmail.created_at,
+      },
+      token: token,
+    };
+  } catch (error) {
+    throw new Error("Failed to login user: " + error.message);
+  }
+};
+
+module.exports = { createUser, logUser };
