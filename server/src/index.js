@@ -8,6 +8,8 @@ const cookieParser = require("cookie-parser");
 
 const { client } = require("./database/connect");
 
+const morgan = require("morgan");
+
 const sellerAuthRoutes = require("./routers/SellerAuthRoutes");
 const userAuthRoutes = require("./routers/UserAuthRoutes");
 
@@ -20,6 +22,7 @@ async function startServer() {
   app.use(cookieParser());
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(morgan("dev"));
 
   await client
     .connect()
